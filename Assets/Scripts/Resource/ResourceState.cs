@@ -1,5 +1,0 @@
-enum ResourceState
-{
-    Free,
-    Reserved
-}

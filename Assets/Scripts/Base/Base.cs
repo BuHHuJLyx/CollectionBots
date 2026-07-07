@@ -9,6 +9,7 @@ public class Base : MonoBehaviour
 {
     [SerializeField] private List<Unit> _units;
     [SerializeField] private float _scanDelay = 2f;
+    [SerializeField] private ResourceRepository _repository;
 
     private Storage _storage;
     private Scanner _scanner;
@@ -33,6 +34,7 @@ public class Base : MonoBehaviour
         if (resource == null)
             throw new ArgumentNullException(nameof(resource));
         
+        _repository.Remove(resource);
         _storage.AddResource();
         resource.Die();
     }
@@ -47,12 +49,10 @@ public class Base : MonoBehaviour
             {
                 if (unit.IsIdle)
                 {
-                    Resource freeResource = _scanner.FindFreeResource();
+                    Resource freeResource = _repository.GetFree();
 
                     if (freeResource == null)
                         break;
-                
-                    freeResource.Reserve();
                 
                     unit.AssignResource(this, freeResource);
                 }
