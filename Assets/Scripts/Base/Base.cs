@@ -1,18 +1,18 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Storage))]
 [RequireComponent(typeof(Scanner))]
+[RequireComponent(typeof(UnitController))]
 public class Base : MonoBehaviour
 {
-    [SerializeField] private List<Unit> _units;
     [SerializeField] private float _scanDelay = 2f;
     [SerializeField] private ResourceRepository _repository;
 
     private Storage _storage;
     private Scanner _scanner;
+    private UnitController _unitController;
 
     private WaitForSeconds _wait;
 
@@ -20,44 +20,48 @@ public class Base : MonoBehaviour
     {
         _storage = GetComponent<Storage>();
         _scanner = GetComponent<Scanner>();
+        _unitController = GetComponent<UnitController>();
         
         _wait = new WaitForSeconds(_scanDelay);
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        StartCoroutine(ScanRoutine());
+        _unitController.Subscribe(ReceiveResource);
     }
 
-    public void ReceiveResource(Resource resource)
+    private void Start()
+    {
+        StartCoroutine(WorkRoutine());
+    }
+
+    private void OnDisable()
+    {
+        _unitController.Unsubscribe(ReceiveResource);
+    }
+
+    private void ReceiveResource(Resource resource)
     {
         if (resource == null)
             throw new ArgumentNullException(nameof(resource));
         
         _repository.Remove(resource);
         _storage.AddResource();
-        resource.Die();
     }
 
-    private IEnumerator ScanRoutine()
+    private IEnumerator WorkRoutine()
     {
         while (enabled)
         {
-            _scanner.Scan();
+            foreach (var resource in _scanner.GetResources())
+                _repository.Add(resource);
+            
+            Resource freeResource = _repository.GetFree();
 
-            foreach (var unit in _units)
-            {
-                if (unit.IsIdle)
-                {
-                    Resource freeResource = _repository.GetFree();
-
-                    if (freeResource == null)
-                        break;
-                
-                    unit.AssignResource(this, freeResource);
-                }
-            }
-        
+            if (freeResource != null)
+                if (_unitController.TryAssignResource(transform, freeResource) == false)
+                    _repository.Return(freeResource);
+            
             yield return _wait; 
         }
     }

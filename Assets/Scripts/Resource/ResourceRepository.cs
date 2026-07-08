@@ -36,6 +36,16 @@ public class ResourceRepository : MonoBehaviour
 
         return resource;
     }
+    
+    public void Return(Resource resource)
+    {
+        if (resource == null)
+            throw new ArgumentNullException(nameof(resource));
+
+        if (_reservedResources.Remove(resource))
+            _freeResources.Add(resource);
+    }
+
 
     public void Remove(Resource resource)
     {

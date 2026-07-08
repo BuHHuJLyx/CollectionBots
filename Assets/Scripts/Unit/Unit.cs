@@ -5,17 +5,21 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
     private Mover _mover;
-    
-    private Base _base;
+
     private Resource _resource;
     private UnitState _state;
     private Transform _currentTarget;
+    private Transform _baseTransform;
     
+    public event Action<Resource> ResourceDelivered;
+
     public bool IsIdle => _state == UnitState.Idle;
 
     private void Awake()
     {
         _mover = GetComponent<Mover>();
+        
+        _state = UnitState.Idle;
     }
 
     private void FixedUpdate()
@@ -23,24 +27,29 @@ public class Unit : MonoBehaviour
         if (_state == UnitState.Idle)
             return;
         
-        if (_mover.Move(_currentTarget))
+        _mover.Move(_currentTarget);
+        
+        if (_mover.ReachedTarget(_currentTarget) == false)
+            return;
+
+        switch (_state)
         {
-         if (_state == UnitState.MoveToResource)
-             Take();
-         else if (_state == UnitState.MoveToBase)
-             Put();
+            case UnitState.MoveToResource:
+                Take();
+                break;
+
+            case UnitState.MoveToBase:
+                Put();
+                break;
         }
     }
 
-    public void AssignResource(Base targetBase, Resource resource)
+    public void AssignResource(Transform baseTransform, Resource resource)
     {
-        if (targetBase == null)
-            throw new ArgumentNullException(nameof(targetBase));
-
         if (resource == null)
             throw new ArgumentNullException(nameof(resource));
-
-        _base = targetBase;
+        
+        _baseTransform = baseTransform;
         _resource = resource;
 
         _currentTarget = resource.transform;
@@ -49,7 +58,7 @@ public class Unit : MonoBehaviour
 
     private void Take()
     {
-        _currentTarget = _base.transform;
+        _currentTarget = _baseTransform;
         _state = UnitState.MoveToBase;
         
         _resource.Take(transform);
@@ -59,7 +68,7 @@ public class Unit : MonoBehaviour
     {
         _resource.Drop();
 
-        _base.ReceiveResource(_resource);
+        ResourceDelivered?.Invoke(_resource);
 
         _resource = null;
         _currentTarget = null;

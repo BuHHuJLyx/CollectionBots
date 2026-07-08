@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -5,7 +6,9 @@ using UnityEngine;
 public class Resource : MonoBehaviour
 {
     private Rigidbody _rigidbody;
-    private Collider _collider;    
+    private Collider _collider;
+    
+    public event Action<Resource> Collected;
 
     private void Awake()
     {
@@ -32,16 +35,13 @@ public class Resource : MonoBehaviour
     public void Drop()
     {
         transform.SetParent(null);
+        
+        Collected?.Invoke(this);
 
         if (_rigidbody != null)
             _rigidbody.isKinematic = false;
 
         if (_collider != null)
             _collider.enabled = true;
-    }
-
-    public void Die()
-    {
-        Destroy(gameObject);
     }
 }

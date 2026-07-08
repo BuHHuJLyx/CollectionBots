@@ -14,18 +14,25 @@ public class Mover : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    public bool Move(Transform target)
+    public void Move(Transform target)
+    {
+        Vector3 direction = GetDirection(target);
+
+        if (direction.sqrMagnitude > _stopDistanceSqr)
+            _rigidbody.MovePosition(_rigidbody.position + direction.normalized * _speed * Time.fixedDeltaTime);
+
+    }
+    
+    public bool ReachedTarget(Transform target)
+    {
+        return GetDirection(target).sqrMagnitude <= _stopDistanceSqr;
+    }
+    
+    private Vector3 GetDirection(Transform target)
     {
         if (target == null)
             throw new ArgumentNullException(nameof(target));
 
-        Vector3 direction = target.position - _rigidbody.position;
-
-        if (direction.sqrMagnitude <= _stopDistanceSqr)
-            return true;
-        
-        _rigidbody.MovePosition(_rigidbody.position + direction.normalized * _speed * Time.fixedDeltaTime);
-
-        return false;
+        return target.position - _rigidbody.position;
     }
 }

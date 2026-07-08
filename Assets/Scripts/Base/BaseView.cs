@@ -18,6 +18,6 @@ public class BaseView : MonoBehaviour
 
     private void OnResourceCollected(int resources)
     {
-        _score.text = "Количество ресурсов: " + resources.ToString();
+        _score.text = resources.ToString();
     }
 }
