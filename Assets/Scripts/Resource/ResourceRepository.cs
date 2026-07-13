@@ -37,7 +37,7 @@ public class ResourceRepository : MonoBehaviour
         return resource;
     }
     
-    public void Return(Resource resource)
+    public void Release(Resource resource)
     {
         if (resource == null)
             throw new ArgumentNullException(nameof(resource));
@@ -46,7 +46,6 @@ public class ResourceRepository : MonoBehaviour
             _freeResources.Add(resource);
     }
 
-
     public void Remove(Resource resource)
     {
         if (resource == null)
@@ -54,5 +53,4 @@ public class ResourceRepository : MonoBehaviour
         
         _reservedResources.Remove(resource);
     }
-
 }

@@ -35,13 +35,13 @@ public class Resource : MonoBehaviour
     public void Drop()
     {
         transform.SetParent(null);
-        
-        Collected?.Invoke(this);
 
         if (_rigidbody != null)
             _rigidbody.isKinematic = false;
 
         if (_collider != null)
             _collider.enabled = true;
+        
+        Collected?.Invoke(this);
     }
 }

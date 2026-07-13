@@ -2,5 +2,6 @@ enum UnitState
 {
     Idle,
     MoveToResource,
-    MoveToBase
+    MoveToBase,
+    MoveToBuilding
 }

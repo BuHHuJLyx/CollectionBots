@@ -5,15 +5,10 @@ using UnityEngine.Pool;
 public class Spawner : MonoBehaviour
 {
     private const int MaxAttempts = 10;
-    
+
     [SerializeField] private Resource _prefab;
+    [SerializeField] private Map _map;
     [SerializeField] private float _delay = 3f;
-    
-    [Header("Spawn Settings")]
-    [SerializeField] private float _minX;
-    [SerializeField] private float _maxX;
-    [SerializeField] private float _minZ;
-    [SerializeField] private float _maxZ;
     
     [Header("Obstacle Check")]
     [SerializeField] private float _radius = 0.5f;
@@ -57,7 +52,7 @@ public class Spawner : MonoBehaviour
     {
         for (int i = 0; i < MaxAttempts; i++)
         {
-            Vector3 position = GetRandomPosition();
+            Vector3 position = _map.GetRandomPosition();
 
             if (Physics.OverlapSphere(position, _radius, _obstacleLayer).Length == 0)
             {
@@ -79,13 +74,5 @@ public class Spawner : MonoBehaviour
             _pool.Get();
             yield return _wait;
         }
-    }
-
-    private Vector3 GetRandomPosition()
-    {
-        float x = Random.Range(_minX, _maxX);
-        float z = Random.Range(_minZ, _maxZ);
-        
-        return new Vector3(x, 1f, z);
     }
 }

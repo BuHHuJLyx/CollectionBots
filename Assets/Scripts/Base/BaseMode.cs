@@ -1,0 +1,5 @@
+enum BaseMode
+{
+    CreateUnits,
+    BuildBase
+}

@@ -157,7 +157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mover
   _speed: 5
-  _stopDistanceSqr: 1.2
+  _stopDistanceSqr: 1.7
 --- !u!114 &6651671198961738263
 MonoBehaviour:
   m_ObjectHideFlags: 0

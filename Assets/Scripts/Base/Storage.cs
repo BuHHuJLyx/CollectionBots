@@ -12,4 +12,29 @@ public class Storage : MonoBehaviour
         Resources++;
         ResourceCollected?.Invoke(Resources);
     }
+    
+    public void ReturnResources(int amount)
+    {
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount));
+
+        Resources += amount;
+
+        ResourceCollected?.Invoke(Resources);
+    }
+
+    public bool TrySpendResources(int amount)
+    {
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount));
+        
+        if (Resources < amount)
+            return false;
+
+        Resources -= amount;
+        
+        ResourceCollected?.Invoke(Resources);
+        
+        return true;
+    }
 }
