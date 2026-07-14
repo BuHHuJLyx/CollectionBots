@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class FlagPlacer : MonoBehaviour
 {
-    [SerializeField] private InputReader _inputReader;
+    [SerializeField] private Raycaster _raycaster;
     [SerializeField] private Map _map;
 
     private FlagController _selectedBase;
 
     private void OnEnable()
     {
-        _inputReader.BaseClicked += OnBaseClicked;
-        _inputReader.GroundClicked += OnGroundClicked;
+        _raycaster.BaseClicked += OnBaseClicked;
+        _raycaster.GroundClicked += OnGroundClicked;
     }
 
     private void OnBaseClicked(FlagController flagController)
@@ -24,7 +24,7 @@ public class FlagPlacer : MonoBehaviour
             return;
         
         if (_map.Contains(position))
-            _selectedBase.Place(position);
+            _selectedBase.PlaceFlag(position);
 
         _selectedBase = null;
     }

@@ -13,7 +13,7 @@ public class FlagController : MonoBehaviour
     public Transform Transform => _flag.transform;
     public bool HasFlag => _flag != null && _flag.IsPlaced;
 
-    public void Place(Vector3 position)
+    public void PlaceFlag(Vector3 position)
     {
         if (_flag == null)
             _flag = Instantiate(_flagPrefab);
@@ -23,7 +23,7 @@ public class FlagController : MonoBehaviour
         FlagPlaced?.Invoke();
     }
 
-    public void Remove()
+    public void RemoveFlag()
     {
         if (_flag == null)
             return;

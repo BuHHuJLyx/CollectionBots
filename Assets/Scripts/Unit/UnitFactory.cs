@@ -4,6 +4,8 @@ public class UnitFactory : MonoBehaviour
 {
     [SerializeField] private Unit _prefab;
     [SerializeField] private Transform _spawnPoint;
+    
+    public Transform SpawnPoint => _spawnPoint;
 
     public Unit Create()
     {

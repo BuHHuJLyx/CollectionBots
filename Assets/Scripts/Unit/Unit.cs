@@ -14,6 +14,7 @@ public class Unit : MonoBehaviour
     
     public event Action<Resource> ResourceDelivered;
     public event Action<Unit> BuildCompleted;
+    public event Action<Unit> BecameIdle;
 
     public bool IsIdle => _state == UnitState.Idle;
 
@@ -96,6 +97,8 @@ public class Unit : MonoBehaviour
         _resource = null;
         _currentTarget = null;
         _state = UnitState.Idle;
+        
+        BecameIdle?.Invoke(this);
     }
     
     private void Build()
@@ -103,6 +106,7 @@ public class Unit : MonoBehaviour
         _currentTarget = null;
         _state = UnitState.Idle;
         
+        BecameIdle?.Invoke(this);
         BuildCompleted?.Invoke(this);
     }
 }

@@ -14,8 +14,8 @@ public class Base : MonoBehaviour
     private const int BaseBuildCost = 5;
 
     [SerializeField] private float _scanDelay;
-    [SerializeField] private ResourceRepository _repository;
 
+    private ResourceRepository _repository;
     private Storage _storage;
     private Scanner _scanner;
     private BaseBuilder _baseBuilder;
@@ -109,26 +109,31 @@ public class Base : MonoBehaviour
 
     private void TryCreateUnit()
     {
-        if (_storage.TrySpendResources(UnitResourceCost))
-        {
-            Unit unit = _unitFactory.Create();
-            _unitController.Add(unit);
-        }
+        if (_storage.CanSpend(UnitResourceCost) == false)
+            return;
+
+        _storage.Spend(UnitResourceCost);
+
+        Unit unit = _unitFactory.Create();
+        _unitController.Add(unit);
     }
 
     private void TryBuildBase()
     {
         if (_flagController.HasFlag == false)
             return;
-        
+
         if (_unitController.CanSendBuilder == false)
             return;
 
-        if (_storage.TrySpendResources(BaseBuildCost) == false)
+        if (_storage.CanSpend(BaseBuildCost) == false)
+            return;
+        
+        if (_unitController.HasFreeUnit == false)
             return;
 
-        if (_unitController.TryAssignBuild(_flagController.Transform) == false)
-            _storage.ReturnResources(BaseBuildCost);
+        _storage.Spend(BaseBuildCost);
+        _unitController.TryAssignBuild(_flagController.Transform);
     }
 
     private void OnBuildCompleted(Unit unit)
@@ -138,12 +143,13 @@ public class Base : MonoBehaviour
 
         _unitController.Remove(unit);
         
+        UnitFactory newFactory = newBase.GetComponent<UnitFactory>();
         unit.transform.SetParent(newBase.transform);
-        unit.transform.position = newBase.transform.position;
-        
+        unit.transform.position = newFactory.SpawnPoint.position;
+
         newBase.AddUnit(unit);
 
-        _flagController.Remove();
+        _flagController.RemoveFlag();
     }
 
     private IEnumerator WorkRoutine()
@@ -166,7 +172,7 @@ public class Base : MonoBehaviour
                     break;
                 }
             }
-            
+
             yield return _wait;
         }
     }
